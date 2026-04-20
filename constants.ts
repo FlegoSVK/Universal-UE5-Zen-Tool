@@ -14,25 +14,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   castocPath: "C:\\Tools\\castoc.exe",
 };
 
-export const MOCK_PROFILES: GameProfile[] = [
-  {
-    id: "1",
-    name: "Stalker 2",
-    rootPath: "D:\\Games\\Stalker2",
-    paksPath: "D:\\Games\\Stalker2\\Stalker2\\Content\\Paks",
-    aesKey: "0x123456789ABCDEF...",
-    engineVersion: EngineVersion.UE5_1,
-  },
-  {
-    id: "2",
-    name: "Grounded 2 (Príklad)",
-    rootPath: "C:\\XboxGames\\Grounded2",
-    paksPath: "C:\\XboxGames\\Grounded2\\Maine\\Content\\Paks",
-    aesKey: "",
-    engineVersion: EngineVersion.UE5_4,
-  },
-];
-
 // Simple lookup for auto-suggestion based on game name substring
 export const GAME_ENGINE_DB: Record<string, EngineVersion> = {
   "stalker": EngineVersion.UE5_1,

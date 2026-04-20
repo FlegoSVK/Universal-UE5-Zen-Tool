@@ -26,7 +26,6 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // --- Paste Logic ---
   const handlePaste = async (setter: (val: string) => void) => {
     try {
       const text = await navigator.clipboard.readText();

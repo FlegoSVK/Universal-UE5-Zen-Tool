@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GameProfile, AppSettings, EngineVersion, ToolType } from './types';
-import { DEFAULT_PROFILE, DEFAULT_SETTINGS, MOCK_PROFILES } from './constants';
+import { DEFAULT_PROFILE, DEFAULT_SETTINGS } from './constants';
 import { ProfileTab } from './components/ProfileTab';
 import { OperationsTab } from './components/OperationsTab';
 import { SettingsTab } from './components/SettingsTab';
@@ -15,24 +15,20 @@ const TABS = [
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profiles');
   
-  // --- PERSISTENCE LOGIC START ---
-  // Load Profiles from LocalStorage or fallback to MOCK/Default
   const [profiles, setProfiles] = useState<GameProfile[]>(() => {
     try {
       const savedProfiles = localStorage.getItem('ue5_tool_profiles');
-      return savedProfiles ? JSON.parse(savedProfiles) : MOCK_PROFILES;
+      return savedProfiles ? JSON.parse(savedProfiles) : [DEFAULT_PROFILE];
     } catch (e) {
       console.error("Failed to load profiles", e);
-      return MOCK_PROFILES;
+      return [DEFAULT_PROFILE];
     }
   });
 
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
-     // Try to restore last active profile
-     return profiles.length > 0 ? profiles[0].id : '';
+     return profiles.length > 0 ? profiles[0].id : DEFAULT_PROFILE.id;
   });
 
-  // Load Settings from LocalStorage or fallback to Default
   const [settings, setSettings] = useState<AppSettings>(() => {
     try {
       const savedSettings = localStorage.getItem('ue5_tool_settings');
@@ -42,20 +38,15 @@ const App: React.FC = () => {
       return DEFAULT_SETTINGS;
     }
   });
-  // --- PERSISTENCE LOGIC END ---
   
-  // Lifted state for Tool Selection
   const [activeTool, setActiveTool] = useState<ToolType>(ToolType.RETOC);
 
-  // Helper to find the active profile object
   const activeProfile = profiles.find(p => p.id === activeProfileId) || profiles[0];
 
-  // Save Settings whenever they change
   useEffect(() => {
     localStorage.setItem('ue5_tool_settings', JSON.stringify(settings));
   }, [settings]);
 
-  // Save Profiles whenever they change
   useEffect(() => {
     localStorage.setItem('ue5_tool_profiles', JSON.stringify(profiles));
   }, [profiles]);

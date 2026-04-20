@@ -23,7 +23,6 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
   const activeProfile = profiles.find((p) => p.id === activeProfileId);
   const [suggestion, setSuggestion] = useState<{key: string, version: EngineVersion} | null>(null);
 
-  // --- Paste Logic ---
   const handlePaste = async (field: keyof GameProfile) => {
     if (!activeProfile) return;
     try {
