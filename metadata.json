@@ -1,0 +1,5 @@
+{
+  "name": "Universal UE5 Zen Tool (Web)",
+  "description": "Moderné GUI pre UE5 Zen Loader nástroje (retoc/castoc). Obsahuje profily hier, generovanie príkazov a kontrolu aktualizácií.",
+  "requestFramePermissions": []
+}
