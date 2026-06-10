@@ -5,6 +5,7 @@ export enum EngineVersion {
   UE5_3 = "UE5_3",
   UE5_4 = "UE5_4",
   UE5_5 = "UE5_5",
+  UE5_6 = "UE5_6",
 }
 
 export enum ToolType {
