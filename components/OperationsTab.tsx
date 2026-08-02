@@ -52,18 +52,19 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
               return;
           }
 
-          // Syntax: & "Path\To\Tool.exe" to-legacy "PaksPath" "OutputPath" --filter "FilterPath"
           if (activeTool === ToolType.RETOC) {
-              cmd = `& "${toolPath}" to-legacy "${activeProfile.paksPath}" "${extractOutputPath}" --filter "${filterPath}"`;
-              if (activeProfile.aesKey) {
-                  cmd += ` --aes "${activeProfile.aesKey}"`;
-              }
-          } else {
-              // Castoc fallback
-              cmd = `& "${toolPath}" extract "${activeProfile.paksPath}" "${extractOutputPath}" --filter "${filterPath}"`;
+              cmd = `& "${toolPath}"`;
               if (activeProfile.aesKey) {
                   cmd += ` --aes-key "${activeProfile.aesKey}"`;
               }
+              cmd += ` to-legacy "${activeProfile.paksPath}" "${extractOutputPath}" --filter "${filterPath}"`;
+          } else {
+              // Castoc fallback
+              cmd = `& "${toolPath}"`;
+              if (activeProfile.aesKey) {
+                  cmd += ` --aes-key "${activeProfile.aesKey}"`;
+              }
+              cmd += ` extract "${activeProfile.paksPath}" "${extractOutputPath}" --filter "${filterPath}"`;
           }
 
       } else {
