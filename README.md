@@ -27,7 +27,16 @@ Universal UE5 Zen Tool je moderné grafické rozhranie (GUI) určené pre modér
 1. Prejdite do karty **Nastavenia** a zadajte cesty k `retoc.exe` alebo `castoc.exe`.
 2. V karte **Profily Hier** pridajte hru a nastavte cesty k jej súborom.
 3. V karte **Operácie** vygenerujte potrebný príkaz.
-4. Skopírujte príkaz a vložte ho do PowerShellu (ako Správca).
+4. Skopírujte vygenerovaný príkaz.
+
+## 💻 Používanie s PowerShell
+Všetky príkazy generované týmto nástrojom sú formátované špeciálne pre **Windows PowerShell** (preto obsahujú znak `&` na začiatku, čo umožňuje spúšťať cesty v úvodzovkách).
+
+**Ako spustiť príkaz:**
+1. Otvorte ponuku Štart (klávesa `Windows`), napíšte `PowerShell` a vyberte možnosť **Spustiť ako správca** (Run as Administrator).
+2. V aplikácii Universal UE5 Zen Tool kliknite na tlačidlo **KOPÍROVAŤ** pod vygenerovaným príkazom.
+3. V okne PowerShellu kliknite pravým tlačidlom myši, čím sa príkaz automaticky vloží.
+4. Stlačte klávesu `Enter` pre potvrdenie. Následne sa zobrazí priebeh vykonávanej operácie nástrojom retoc/castoc.
 
 ---
 *Vyvinuté pre UE5 Modding Komunitu.*

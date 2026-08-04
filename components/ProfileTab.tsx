@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GameProfile, EngineVersion } from '../types';
 import { GAME_ENGINE_DB } from '../constants';
 import { Save, Trash, Plus, Sparkles, ClipboardPaste } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface ProfileTabProps {
   profiles: GameProfile[];
@@ -20,6 +21,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
   onAddProfile,
   onDeleteProfile,
 }) => {
+  const { t } = useTranslation();
   const activeProfile = profiles.find((p) => p.id === activeProfileId);
   const [suggestion, setSuggestion] = useState<{key: string, version: EngineVersion} | null>(null);
 
@@ -32,7 +34,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
       }
     } catch (err) {
       console.error('Failed to read clipboard', err);
-      alert("Nepodarilo sa prečítať schránku. Uistite sa, že ste udelili povolenie.");
+      alert(t('pasteError'));
     }
   };
 
@@ -62,7 +64,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     }
   };
 
-  if (!activeProfile) return <div className="p-8 text-center text-slate-500">Žiadne profily neboli načítané.</div>;
+  if (!activeProfile) return <div className="p-8 text-center text-slate-500">{t('noProfiles')}</div>;
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto animate-fadeIn">
@@ -70,7 +72,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
       {/* Header / Selector */}
       <div className="flex items-end gap-4 border-b border-slate-800 pb-6">
         <div className="flex-1">
-          <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Aktuálny Profil Hry</label>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-2">{t('currentProfile')}</label>
           <div className="relative">
             <select
               value={activeProfileId}
@@ -87,20 +89,20 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
               <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Vyberte hru, ktorú chcete modovať.</p>
+          <p className="text-xs text-slate-500 mt-1">{t('selectGame')}</p>
         </div>
         <button
           onClick={onAddProfile}
           className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-3 rounded-lg flex items-center gap-2 font-medium transition-colors"
-          title="Pridať novú hru"
+          title={t('newGame')}
         >
-          <Plus size={18} /> Nová Hra
+          <Plus size={18} /> {t('newGame')}
         </button>
         <button
           onClick={() => onDeleteProfile(activeProfileId)}
           className="bg-slate-800 hover:bg-red-900/50 hover:text-red-400 text-slate-400 px-4 py-3 rounded-lg flex items-center gap-2 transition-colors border border-slate-700 hover:border-red-800"
           disabled={profiles.length <= 1}
-          title="Zmazať tento profil"
+          title={t('deleteProfile')}
         >
           <Trash size={18} />
         </button>
@@ -110,18 +112,18 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
       <div className="grid gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Názov Profilu</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">{t('profileName')}</label>
             <input
               type="text"
               value={activeProfile.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              placeholder="Napr. Stalker 2"
+              placeholder={t('profileNamePlaceholder')}
               className="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-slate-200 focus:border-blue-500 outline-none"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Verzia Enginu (Unreal Version)</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">{t('engineVersion')}</label>
             <select
               value={activeProfile.engineVersion}
               onChange={(e) => handleChange('engineVersion', e.target.value)}
@@ -140,63 +142,63 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                 >
                     <Sparkles size={14} className="text-amber-400 animate-pulse" />
                     <span>
-                        Rozpoznaná hra <strong>{suggestion.key}</strong>. 
-                        Odporučená verzia: <span className="font-bold text-amber-400 decoration-amber-400 underline decoration-dotted">{suggestion.version}</span>
+                        {t('detectedGame')} <strong>{suggestion.key}</strong>. 
+                        {t('recommendedVersion')} <span className="font-bold text-amber-400 decoration-amber-400 underline decoration-dotted">{suggestion.version}</span>
                     </span>
-                    <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity font-bold text-amber-400">Použiť</span>
+                    <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity font-bold text-amber-400">{t('apply')}</span>
                 </button>
             )}
             
             {!suggestion && (
-                <p className="text-xs text-slate-600 mt-1">Dôležité pre správne balenie (Grounded 2 je zvyčajne 5.3 alebo 5.4).</p>
+                <p className="text-xs text-slate-600 mt-1">{t('engineImportant')}</p>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Koreňový Priečinok Hry (Root Path)</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">{t('rootPath')}</label>
           <div className="flex gap-2">
             <input
                 type="text"
                 value={activeProfile.rootPath}
                 onChange={(e) => handleChange('rootPath', e.target.value)}
                 className="flex-1 bg-slate-950 border border-slate-700 rounded p-2.5 text-slate-200 focus:border-blue-500 outline-none font-mono text-sm"
-                placeholder="Napr. C:\XboxGames\Grounded2"
+                placeholder={t('rootPathPlaceholder')}
             />
             <button 
                 onClick={() => handlePaste('rootPath')}
                 className="bg-slate-800 p-2.5 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                title="Prilepiť text zo schránky"
+                title={t('pasteClipboard')}
             >
                 <ClipboardPaste size={18} />
             </button>
           </div>
-          <p className="text-xs text-slate-600 mt-1">Hlavný priečinok inštalácie hry (napr. steamapps/common/GameName).</p>
+          <p className="text-xs text-slate-600 mt-1">{t('rootPathHelp')}</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Priečinok s .pak súbormi (Paks Path)</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">{t('paksPath')}</label>
           <div className="flex gap-2">
             <input
                 type="text"
                 value={activeProfile.paksPath}
                 onChange={(e) => handleChange('paksPath', e.target.value)}
                 className="flex-1 bg-slate-950 border border-slate-700 rounded p-2.5 text-slate-200 focus:border-blue-500 outline-none font-mono text-sm"
-                placeholder="Napr. C:\XboxGames\Grounded2\Maine\Content\Paks"
+                placeholder={t('paksPathPlaceholder')}
             />
              <button 
                 onClick={() => handlePaste('paksPath')}
                 className="bg-slate-800 p-2.5 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                title="Prilepiť text zo schránky"
+                title={t('pasteClipboard')}
             >
                 <ClipboardPaste size={18} />
             </button>
           </div>
-          <p className="text-xs text-slate-600 mt-1">Zvyčajne v: Game/Content/Paks. Tu program hľadá .utoc a .ucas súbory.</p>
+          <p className="text-xs text-slate-600 mt-1">{t('paksPathHelp')}</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">AES Kľúč <span className="text-slate-600 text-xs">(Voliteľné)</span></label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">{t('aesKey')} <span className="text-slate-600 text-xs">{t('optional')}</span></label>
           <input
             type="text"
             value={activeProfile.aesKey}
@@ -204,7 +206,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             placeholder="0x..."
             className="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-slate-200 focus:border-blue-500 outline-none font-mono text-sm"
           />
-          <p className="text-xs text-slate-600 mt-1">Hexadecimálny kľúč potrebný len ak sú súbory hry šifrované.</p>
+          <p className="text-xs text-slate-600 mt-1">{t('aesKeyHelp')}</p>
         </div>
 
         <div className="pt-4 flex justify-end">
@@ -212,7 +214,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             onClick={() => {/* Mock save action */}}
             className="bg-green-700 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-lg shadow-green-900/20"
           >
-            <Save size={18} /> Uložiť Nastavenia Profilu
+            <Save size={18} /> {t('saveProfile')}
           </button>
         </div>
       </div>

@@ -12,6 +12,7 @@ export const DEFAULT_PROFILE: GameProfile = {
 export const DEFAULT_SETTINGS: AppSettings = {
   retocPath: "F:\\Preklady\\_APK\\retoc.exe",
   castocPath: "C:\\Tools\\castoc.exe",
+  language: 'sk',
 };
 
 // Simple lookup for auto-suggestion based on game name substring

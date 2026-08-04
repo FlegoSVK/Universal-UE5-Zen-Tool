@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AppSettings, GithubRelease } from '../types';
 import { checkUpdate } from '../services/githubService';
-import { Download, RefreshCw, CheckCircle, Github, ClipboardPaste } from 'lucide-react';
+import { Download, RefreshCw, CheckCircle, Github, ClipboardPaste, Globe } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface SettingsTabProps {
   settings: AppSettings;
@@ -9,6 +10,7 @@ interface SettingsTabProps {
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, onUpdateSettings }) => {
+  const { t, lang } = useTranslation();
   const [retocRelease, setRetocRelease] = useState<GithubRelease | null>(null);
   const [guiRelease, setGuiRelease] = useState<GithubRelease | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,24 +44,41 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, onUpdateSett
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8 animate-fadeIn">
       
+      {/* Language */}
+      <section className="space-y-4">
+        <h3 className="text-lg font-bold text-white border-b border-slate-800 pb-2 flex items-center gap-2">
+            <Globe size={18} /> {t('language')}
+        </h3>
+        <div>
+            <select
+                value={lang}
+                onChange={(e) => onUpdateSettings({...settings, language: e.target.value as 'sk' | 'en'})}
+                className="w-full max-w-xs bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-blue-500 outline-none"
+            >
+                <option value="sk">Slovenčina</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+      </section>
+
       {/* Tool Paths */}
       <section className="space-y-4">
-        <h3 className="text-lg font-bold text-white border-b border-slate-800 pb-2">Konfigurácia Nástrojov</h3>
+        <h3 className="text-lg font-bold text-white border-b border-slate-800 pb-2">{t('toolConfig')}</h3>
         
         <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Cesta k retoc.exe</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">{t('retocPath')}</label>
             <div className="flex gap-2">
                 <input
                     type="text"
                     value={settings.retocPath}
                     onChange={(e) => onUpdateSettings({...settings, retocPath: e.target.value})}
                     className="flex-1 bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-blue-500 outline-none font-mono text-sm shadow-inner"
-                    placeholder="Napr. F:\Preklady\Grounded 2\retoc.exe"
+                    placeholder={t('retocPlaceholder')}
                 />
                 <button 
                     onClick={() => handlePaste('retocPath')}
                     className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                    title="Prilepiť text zo schránky"
+                    title={t('pasteClipboard')}
                 >
                     <ClipboardPaste size={18} />
                 </button>
@@ -67,37 +86,37 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, onUpdateSett
         </div>
 
         <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Cesta k castoc.exe</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">{t('castocPath')}</label>
              <div className="flex gap-2">
                 <input
                     type="text"
                     value={settings.castocPath}
                     onChange={(e) => onUpdateSettings({...settings, castocPath: e.target.value})}
                     className="flex-1 bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-blue-500 outline-none font-mono text-sm shadow-inner"
-                    placeholder="Napr. C:\Tools\castoc.exe"
+                    placeholder={t('castocPlaceholder')}
                 />
                 <button 
                     onClick={() => handlePaste('castocPath')}
                     className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                    title="Prilepiť text zo schránky"
+                    title={t('pasteClipboard')}
                 >
                     <ClipboardPaste size={18} />
                 </button>
             </div>
-             <p className="text-xs text-slate-600 mt-1">Alternatívny nástroj (voliteľné).</p>
+             <p className="text-xs text-slate-600 mt-1">{t('castocHelp')}</p>
         </div>
       </section>
 
       {/* Update Checker */}
       <section className="space-y-4">
         <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-            <h3 className="text-lg font-bold text-white">Kontrola Aktualizácií</h3>
+            <h3 className="text-lg font-bold text-white">{t('updateCheck')}</h3>
             <button 
                 onClick={handleCheckUpdates}
                 disabled={loading}
                 className="text-sm bg-slate-800 hover:bg-slate-700 text-blue-400 px-3 py-1.5 rounded flex items-center gap-2 transition-colors disabled:opacity-50"
             >
-                <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Skontrolovať Teraz
+                <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> {t('checkNow')}
             </button>
         </div>
 
@@ -120,11 +139,11 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, onUpdateSett
                             )}
                          </div>
                     ) : (
-                        <div className="text-sm text-slate-500">Kontrolujem...</div>
+                        <div className="text-sm text-slate-500">{t('checking')}</div>
                     )}
                 </div>
                 {retocRelease && (
-                    <a href={retocRelease.html_url} target="_blank" rel="noreferrer" className="bg-slate-800 hover:bg-slate-700 p-2 rounded text-slate-300" title="Otvoriť na GitHub">
+                    <a href={retocRelease.html_url} target="_blank" rel="noreferrer" className="bg-slate-800 hover:bg-slate-700 p-2 rounded text-slate-300" title={t('openGithub')}>
                         <Download size={18} />
                     </a>
                 )}
@@ -148,11 +167,11 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, onUpdateSett
                             )}
                          </div>
                     ) : (
-                        <div className="text-sm text-slate-500">Kontrolujem...</div>
+                        <div className="text-sm text-slate-500">{t('checking')}</div>
                     )}
                 </div>
                 {guiRelease && (
-                    <a href={guiRelease.html_url} target="_blank" rel="noreferrer" className="bg-slate-800 hover:bg-slate-700 p-2 rounded text-slate-300" title="Otvoriť na GitHub">
+                    <a href={guiRelease.html_url} target="_blank" rel="noreferrer" className="bg-slate-800 hover:bg-slate-700 p-2 rounded text-slate-300" title={t('openGithub')}>
                         <Download size={18} />
                     </a>
                 )}

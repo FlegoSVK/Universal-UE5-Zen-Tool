@@ -25,6 +25,7 @@ export interface GameProfile {
 export interface AppSettings {
   retocPath: string;
   castocPath: string;
+  language?: 'sk' | 'en';
 }
 
 export interface GithubRelease {

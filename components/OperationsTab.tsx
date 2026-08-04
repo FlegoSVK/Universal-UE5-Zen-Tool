@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameProfile, ToolType, AppSettings } from '../types';
 import { PackageOpen, Box, FileText, Copy, Check, ClipboardPaste, Terminal, AlertCircle } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface OperationsTabProps {
   activeProfile: GameProfile;
@@ -9,6 +10,7 @@ interface OperationsTabProps {
 }
 
 export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, settings, activeTool }) => {
+  const { t } = useTranslation();
   // Extraction States
   const [filterPath, setFilterPath] = useState('');
   const [extractOutputPath, setExtractOutputPath] = useState('D:\\Modding\\Extracted');
@@ -17,9 +19,14 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
   const [modSource, setModSource] = useState('');
   const [packDestFolder, setPackDestFolder] = useState(''); 
   
-  // Naming parts based on: z_Grounded2_SK_300_P
-  const [modNameStr, setModNameStr] = useState('Grounded2');
+  // Naming parts based on: z_Nazov_SK_ID_P
+  const [modNameStr, setModNameStr] = useState(() => activeProfile.name.replace(/[^a-zA-Z0-9]/g, ''));
+  const [modLangStr, setModLangStr] = useState('SK');
   const [modChunkId, setModChunkId] = useState('300');
+
+  useEffect(() => {
+    setModNameStr(activeProfile.name.replace(/[^a-zA-Z0-9]/g, ''));
+  }, [activeProfile.name]);
 
   // Command Output State
   const [generatedCommand, setGeneratedCommand] = useState('');
@@ -34,7 +41,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
       }
     } catch (err) {
       console.error('Failed to read clipboard', err);
-      alert("Nepodarilo sa prečítať schránku. Uistite sa, že ste udelili povolenie.");
+      alert(t('pasteError'));
     }
   };
 
@@ -48,7 +55,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
 
       if (type === 'extract') {
           if (!filterPath || !extractOutputPath) {
-              setErrorMsg("Chyba: Vyplňte cestu filtra a výstupný priečinok.");
+              setErrorMsg(t('errorExtract'));
               return;
           }
 
@@ -70,11 +77,11 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
       } else {
           // PACKING
           if (!modSource || !packDestFolder) {
-              setErrorMsg("Chyba: Vyplňte zdrojový a cieľový priečinok.");
+              setErrorMsg(t('errorPack'));
               return;
           }
 
-          const finalFileName = `z_${modNameStr}_SK_${modChunkId}_P.utoc`;
+          const finalFileName = `z_${modNameStr}_${modLangStr}_${modChunkId}_P.utoc`;
           const fullOutputFilePath = `${packDestFolder}\\${finalFileName}`;
 
           // Syntax: & "Path\To\Tool.exe" to-zen --version UE5_X "SourcePath" "OutputFile"
@@ -109,21 +116,21 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                     <PackageOpen size={24} />
                 </div>
                 <div>
-                    <h3 className="font-bold text-slate-200">Extrakcia (Zen &rarr; Legacy)</h3>
-                    <p className="text-xs text-slate-500">Rozbalenie súborov hry (.utoc/.ucas &rarr; .uasset)</p>
+                    <h3 className="font-bold text-slate-200">{t('extractionTitle')}</h3>
+                    <p className="text-xs text-slate-500">{t('extractionDesc')}</p>
                 </div>
                 </div>
                 
                 <div className="p-6 space-y-6 flex-1">
                 <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Cesta Filtra (Konkrétny súbor .uasset)</label>
+                    <label className="block text-sm font-medium text-slate-400 mb-2">{t('filterPath')}</label>
                     <div className="flex gap-2">
                         <div className="relative flex-1">
                             <input
                             type="text"
                             value={filterPath}
                             onChange={(e) => setFilterPath(e.target.value)}
-                            placeholder="/GameName/Content/Path/To/Asset.uasset"
+                            placeholder={t('filterPathPlaceholder')}
                             className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-amber-500 outline-none font-mono text-sm pl-8 transition-colors"
                             />
                             <div className="absolute left-3 top-3 text-slate-600">/</div>
@@ -131,7 +138,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                         <button 
                             onClick={() => handlePaste(setFilterPath)}
                             className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                            title="Prilepiť text zo schránky"
+                            title={t('pasteClipboard')}
                         >
                             <ClipboardPaste size={18} />
                         </button>
@@ -139,19 +146,19 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Výstupný priečinok extrakcie</label>
+                    <label className="block text-sm font-medium text-slate-400 mb-2">{t('extractOutput')}</label>
                     <div className="flex gap-2">
                         <input
                             type="text"
                             value={extractOutputPath}
                             onChange={(e) => setExtractOutputPath(e.target.value)}
-                            placeholder="D:\Modding\Extracted"
+                            placeholder={t('extractOutputPlaceholder')}
                             className="flex-1 bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-amber-500 outline-none font-mono text-sm transition-colors"
                         />
                         <button 
                             onClick={() => handlePaste(setExtractOutputPath)}
                             className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                            title="Prilepiť text zo schránky"
+                            title={t('pasteClipboard')}
                         >
                             <ClipboardPaste size={18} />
                         </button>
@@ -169,7 +176,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                         className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 transition-all shadow-lg shadow-amber-900/20 active:scale-[0.98]"
                     >
                         <FileText size={18} /> 
-                        <span>GENEROVAŤ PRÍKAZ</span>
+                        <span>{t('generateCommand')}</span>
                     </button>
                 </div>
                 </div>
@@ -182,27 +189,27 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                     <Box size={24} />
                 </div>
                 <div>
-                    <h3 className="font-bold text-slate-200">Balenie (Legacy &rarr; Zen)</h3>
-                    <p className="text-xs text-slate-500">Zabalenie upravených súborov do .utoc/.ucas</p>
+                    <h3 className="font-bold text-slate-200">{t('packingTitle')}</h3>
+                    <p className="text-xs text-slate-500">{t('packingDesc')}</p>
                 </div>
                 </div>
 
                 <div className="p-6 space-y-6 flex-1">
                 {/* Source Input */}
                 <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Zdrojový priečinok módu (Source)</label>
+                    <label className="block text-sm font-medium text-slate-400 mb-2">{t('sourcePath')}</label>
                     <div className="flex gap-2">
                         <input
                             type="text"
                             value={modSource}
                             onChange={(e) => setModSource(e.target.value)}
-                            placeholder="F:\Preklady\Grounded 2\Export"
+                            placeholder={t('sourcePathPlaceholder')}
                             className="flex-1 bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-emerald-500 outline-none font-mono text-sm transition-colors"
                         />
                         <button 
                             onClick={() => handlePaste(setModSource)}
                             className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                            title="Prilepiť text zo schránky"
+                            title={t('pasteClipboard')}
                         >
                             <ClipboardPaste size={18} />
                         </button>
@@ -211,19 +218,19 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
 
                 {/* Destination Folder */}
                 <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Priečinok pre export (Kde uložiť .utoc)</label>
+                    <label className="block text-sm font-medium text-slate-400 mb-2">{t('destFolder')}</label>
                     <div className="flex gap-2">
                         <input
                             type="text"
                             value={packDestFolder}
                             onChange={(e) => setPackDestFolder(e.target.value)}
-                            placeholder="F:\Preklady\Grounded 2"
+                            placeholder={t('destFolderPlaceholder')}
                             className="flex-1 bg-slate-950 border border-slate-700 rounded p-3 text-slate-200 focus:border-emerald-500 outline-none font-mono text-sm transition-colors"
                         />
                         <button 
                             onClick={() => handlePaste(setPackDestFolder)}
                             className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-                            title="Prilepiť text zo schránky"
+                            title={t('pasteClipboard')}
                         >
                             <ClipboardPaste size={18} />
                         </button>
@@ -232,7 +239,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                 
                 {/* Naming Pattern Input */}
                 <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Názov Módu (Pattern: z_Nazov_SK_ID_P)</label>
+                    <label className="block text-sm font-medium text-slate-400 mb-2">{t('modNameLabel')}</label>
                     <div className="flex items-center bg-slate-950 border border-slate-700 rounded p-1">
                         <div className="px-3 py-2 text-slate-500 font-mono select-none">z_</div>
                         
@@ -240,11 +247,20 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                             type="text"
                             value={modNameStr}
                             onChange={(e) => setModNameStr(e.target.value)}
-                            placeholder="Grounded2"
-                            className="flex-1 bg-transparent text-center text-slate-200 outline-none font-mono font-bold placeholder-slate-700"
+                            className="flex-1 min-w-[50px] bg-transparent text-center text-slate-200 outline-none font-mono font-bold placeholder-slate-700"
                         />
                         
-                        <div className="px-2 py-2 text-slate-500 font-mono select-none border-l border-r border-slate-800">_SK_</div>
+                        <div className="px-1 py-2 text-slate-500 font-mono select-none border-l border-slate-800">_</div>
+                        
+                        <input
+                            type="text"
+                            value={modLangStr}
+                            onChange={(e) => setModLangStr(e.target.value)}
+                            className="w-12 bg-transparent text-center text-slate-200 outline-none font-mono font-bold placeholder-slate-700 uppercase"
+                            maxLength={3}
+                        />
+                        
+                        <div className="px-1 py-2 text-slate-500 font-mono select-none border-r border-slate-800">_</div>
                         
                         <input
                             type="text"
@@ -259,8 +275,8 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                 </div>
 
                 <div className="bg-slate-950/50 p-3 rounded border border-slate-800 text-xs text-slate-500 flex justify-between items-center">
-                    <span>Nástroj: <span className="text-blue-400 font-mono">{activeTool === ToolType.RETOC ? 'retoc.exe' : 'castoc.exe'}</span></span>
-                    <span>Verzia: <span className="text-emerald-400 font-bold">{activeProfile.engineVersion}</span></span>
+                    <span>{t('toolLabel')} <span className="text-blue-400 font-mono">{activeTool === ToolType.RETOC ? 'retoc.exe' : 'castoc.exe'}</span></span>
+                    <span>{t('versionLabel')} <span className="text-emerald-400 font-bold">{activeProfile.engineVersion}</span></span>
                 </div>
 
                 <div className="mt-auto pt-4">
@@ -274,7 +290,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                         className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 transition-all shadow-lg shadow-emerald-900/20 active:scale-[0.98]"
                     >
                         <FileText size={18} /> 
-                        <span>GENEROVAŤ PRÍKAZ</span>
+                        <span>{t('generateCommand')}</span>
                     </button>
                 </div>
                 </div>
@@ -287,14 +303,14 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                   <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2 text-slate-400">
                           <Terminal size={16} />
-                          <span className="text-sm font-bold uppercase tracking-wider">Vygenerovaný Príkaz</span>
+                          <span className="text-sm font-bold uppercase tracking-wider">{t('generatedCommand')}</span>
                       </div>
                       <button 
                           onClick={copyToClipboard}
                           className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-bold transition-all ${copied ? 'bg-green-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'}`}
                       >
                           {copied ? <Check size={14} /> : <Copy size={14} />}
-                          {copied ? 'SKOPIROVANÉ' : 'KOPIROVAŤ'}
+                          {copied ? t('copied') : t('copy')}
                       </button>
                   </div>
                   <div className="relative">
@@ -305,7 +321,7 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ activeProfile, set
                       />
                   </div>
                   <p className="text-xs text-slate-500 mt-2 text-center">
-                      Skopírujte tento príkaz a vložte ho do PowerShell okna (Admin).
+                      {t('copyHelp')}
                   </p>
               </div>
           )}
